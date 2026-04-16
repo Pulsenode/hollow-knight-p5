@@ -1,4 +1,5 @@
 let enemies = [];
+let currentAttackBox = null;
 
 function initEnemies() {
   enemies = [ // this array handle the position, width and height, speed and hp of the emeies
@@ -44,18 +45,52 @@ function updateEnemies() { // function to update
 
     if (player.attacking) {
 
-    let attackRange = 50;
+    let attackBox = {}; // variable 
+    
 
-    let attackX = player.x + player.w; // right side
-    let attackY = player.y;
-    let attackW = attackRange;
-    let attackH = player.h;
+    if (player.attackDir === "right") {
+    attackBox = {
+        x: player.x + player.w,
+        y: player.y,
+        w: 40,
+        h: player.h
+    };
+    }
+
+    if (player.attackDir === "left") {
+    attackBox = {
+        x: player.x - 40,
+        y: player.y,
+        w: 40,
+        h: player.h
+    };
+    }
+
+    if (player.attackDir === "up") {
+    attackBox = {
+        x: player.x,
+        y: player.y - 40,
+        w: player.w,
+        h: 40
+    };
+    }
+
+    if (player.attackDir === "down") {
+    attackBox = {
+        x: player.x,
+        y: player.y + player.h,
+        w: player.w,
+        h: 40
+    };
+    }
+
+    currentAttackBox = attackBox;
 
     let hit =
-        attackX < e.x + e.w &&
-        attackX + attackW > e.x &&
-        attackY < e.y + e.h &&
-        attackY + attackH > e.y;
+        attackBox.x < e.x + e.w &&
+        attackBox.x + attackBox.w > e.x &&
+        attackBox.y < e.y + e.h &&
+        attackBox.y + attackBox.h > e.y;
 
     if (hit && e.hitCooldown === 0) {
         e.hp--; 
@@ -63,6 +98,17 @@ function updateEnemies() { // function to update
 
       hitPause = 5; // impact feedback
       shake = 12; // screen shake when enemy is hit
+
+
+      for (let i = 0; i < 8; i++) { // loop for spwanning particles 
+        particles.push({
+            x: e.x + e.w / 2, //spwan at the enemies  
+            y: e.y + e.h / 2,
+            vx: random(-3, 3), //random direction where the partciles spwan
+            vy: random(-3, 0),
+            life: 10 // particles exists for a short period of time
+         });
+        }
 
         let dir = player.x < e.x ? 1 : -1; //knowback
         e.x += dir * 25;
@@ -72,7 +118,13 @@ function updateEnemies() { // function to update
         score++; // increment the score of the player of 1
       }
     }
+
+    console.log("BOX:", attackBox);
    }
+
+   if (!player.attacking) {
+  currentAttackBox = null;
+  }
   }
   enemies = enemies.filter(e => !e.dead);
 
@@ -100,7 +152,14 @@ function drawEnemies(cameraX) {  // function for drawing the enemy
   if (player.attacking) { // It shows the attack hitbox | Great for testing
     push();
     fill(255, 255, 0, 100);
-    rect(player.x + player.w - cameraX, player.y, 50, player.h);
+    if (currentAttackBox) {
+        rect(
+            currentAttackBox.x - cameraX,
+            currentAttackBox.y,
+            currentAttackBox.w,
+            currentAttackBox.h
+        );
+    }
     pop();
   }
 }

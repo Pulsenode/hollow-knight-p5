@@ -18,6 +18,9 @@ function initPlayer() {
 
     hp: 5, // Health of the player
     hitCooldown: 0, 
+
+    dir: "right", // dir for direction of the player
+    attackDir: "right", // attack direction
   };
 }
 
