@@ -29,8 +29,7 @@ function mousePressed() { // function for when a mouse button is pressed
         mouseX < width / 2 + 100 &&
         mouseY > height / 2 + 20 &&
         mouseY < height / 2 + 80) {
-      gameState = 'game'; // change gamestate to game when button pressed
-      console.log("play button pressed"); // console logging for 
+        resetGame();  // reset the game every time pressing the play button on the menu
       return;
     }
     // Difficulty left button
@@ -57,6 +56,25 @@ function mousePressed() { // function for when a mouse button is pressed
     }
   }
 
+  if (gameState === "death") { // Handle cliks on the death screen for buttons
+
+
+  if (mouseX > width / 2 - 100 && // Restart button
+      mouseX < width / 2 + 100 &&
+      mouseY > 300 &&
+      mouseY < 360
+  ) {
+    resetGame(); // Using resetGame function to reset everything
+  }
+
+  if (mouseX > width / 2 - 100 && // Menu Button
+      mouseX < width / 2 + 100 &&
+      mouseY > 380 &&
+      mouseY < 440
+  ) {
+    gameState = "menu"; // Chaging the game state to go back to meny
+  }
+}
 }
 
 
@@ -101,12 +119,7 @@ function runGame() {// function that run update and draw player when hame is run
 }
 
 
-function resetGame() { // function that allow everything to reset
-  initPlayer(); // reset player position
-  initWorld(); // reset world
-  initEnemies(); // reset enemy position
-  gameState = "game";
-}
+
 
 
 function keyPressed() { // function for keybindings 
@@ -126,6 +139,13 @@ function keyPressed() { // function for keybindings
   }
 }
 
+function resetGame() { // function that allow everything to reset
+  initPlayer(); // reset player position
+  initWorld(); // reset world
+  initEnemies(); // reset enemy position
+  gameState = "game";
+}
+
 function drawDeathScreen() { // function for death screen apperance
   background(0);
 
@@ -133,6 +153,19 @@ function drawDeathScreen() { // function for death screen apperance
   textAlign(CENTER);
   textSize(50);
   text("YOU DIED", width / 2, height / 2);
+
+  // Restart button
+  fill(100);
+  rect(width / 2 - 100, 300, 200, 60, 10);
+  fill(255);
+  textSize(20);
+  text("Restart", width / 2, 335);
+
+  // Menu button
+  fill(100);
+  rect(width / 2 - 100, 380, 200, 60, 10);
+  fill(255);
+  text("Menu", width / 2, 415);
 }
 
 
