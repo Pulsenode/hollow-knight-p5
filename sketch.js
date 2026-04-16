@@ -9,11 +9,10 @@ let cameraX = 0; // camera
 
 let score = 0; // player score
 
-let hitPause = 0; 
-let shake = 0
+
+
 let isFrozen = false; // temporary freeze frames when hit
 
-let particles = []; // an array for particles 
 
 
 
@@ -107,7 +106,7 @@ function draw() {
 function runGame() {// function that run update and draw player when hame is running
   background(50);
 
-  // Handle freeze frames timer
+  // Handle freeze frames timer for impact frame
   if (hitPause > 0) {
     hitPause--;
     isFrozen = true;
@@ -117,7 +116,8 @@ function runGame() {// function that run update and draw player when hame is run
 
   drawUI(); // using the drawUI function for health bar (UI not shaken)
 
-  cameraX = player.x - width / 2;
+  let targetX = player.x - width / 2;
+  cameraX += (targetX - cameraX) * 0.1;
   cameraX = constrain(cameraX, 0, mapWidth - width); // prevents for the camera for going to far right and left
   
   push(); // World drawing (shaken). UI is drawn outside of this push/pop so it stays stable.
@@ -146,28 +146,15 @@ function runGame() {// function that run update and draw player when hame is run
 
 function keyPressed() { // function for keybindings 
 
-  if (keyIsDown(38) || keyIsDown(32)) { // ArrowUp or spacebar | Jumping button
+  if (keyCode === UP_ARROW || keyCode === 32) { // ArrowUp or spacebar | Jumping button
     if(player.onGround) {
       player.vy = player.jumpForce;
-      player.attackDir = "up"; // player direction for attack
     }
   }
 
-  if (keyIsDown(40) || keyIsDown(83)) { // ArrowDown or S | Facing down / direction
-    player.attackDir = "down"; // player direction for attack
-  } 
 
-    if (keyIsDown(65) || keyIsDown(37)) { // A or ArrowLeft | left
-    player.vx = -player.speed;
-    player.attackDir = "left"; // player direction for attack
-  }
 
-  if (keyIsDown(68) || keyIsDown(39)) { // D or ArrowRight | Right
-    player.vx = player.speed;
-    player.attackDir = "right" // player direction for attack
-  }
-
-  if (keyIsDown(70)) { // F for attacking
+  if (keyCode === 70) { // F for attacking
     if (!player.attacking) {
 
       player.attacking = true;
@@ -184,20 +171,6 @@ function keyPressed() { // function for keybindings
       console.log("ATTACK DIR:", player.attackDir);
 
     }
-  }
-}
-
-
-function applyShake() {
-  if (shake > 0.1) {
-    let offsetX = random(-shake, shake);
-    let offsetY = random(-shake, shake);
-
-    translate(offsetX, offsetY);
-
-    shake *= 0.9; // slower decay = smoother
-  } else {
-    shake = 0;
   }
 }
 
@@ -232,30 +205,7 @@ function resetGame() { // function that allow everything to reset
 
 
 
-function updateParticles() {
-  for (let i = particles.length - 1; i >= 0; i--) {// loop for particles
-    let p = particles[i]; // p = particles object
 
-
-    p.x += p.vx; // movement of the particles
-    p.y += p.vy;
-
-    p.vy += 0.2; // gravity for particles to fall down for realism
-
-    p.life--; //  life = timer to let particles disappear and not staying at the screen
-
-
-    push(); // isolate drawing settings | prevent afecting other part of the game
-    noStroke(); //particles darw
-    fill(255, 200, 100, p.life * 10);
-    rect(p.x, p.y, 4, 4);
-    pop();
-
-    if (p.life <= 0) { // remove particles from the array 
-      particles.splice(i, 1);
-    }
-  }
-}
 
 
 function drawDeathScreen() { // function for death screen apperance

@@ -29,9 +29,26 @@ function updatePlayer() {// function that update player movememnt every 60frames
   
   player.vx = 0;
 
-  keyPressed(); // using keyPressed function 
 
-  player.x += player.vx;
+    if (keyIsDown(65) || keyIsDown(37)) { // A or ArrowLeft | left
+    player.vx = -player.speed;
+    player.dir = "left"; // player direction for attack
+  }
+
+  if (keyIsDown(68) || keyIsDown(39)) { // D or ArrowRight | Right
+    player.vx = player.speed;
+    player.dir = "right" // player direction for attack
+  }
+
+  if (keyIsDown(UP_ARROW)) { // vertical aim for attack
+    player.dir = "up";
+  }
+
+  if (keyIsDown(UP_ARROW)) {
+    player.dir = "down";
+  }
+
+  player.x += player.vx; // aply movement
 
   player.vy += player.gravity; //increase every frame to simulate falling acceleration
   player.y += player.vy; // moves down to simulate player fall
