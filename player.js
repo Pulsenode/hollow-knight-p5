@@ -11,7 +11,10 @@ function initPlayer() {
     speed: 5,
     jumpForce: -12,
     gravity: 0.6,
-    onGround: false
+    onGround: false,
+
+    attacking: false, // check if attack is active | by default no
+    attackTimer: 0 // controls attack duration
   };
 }
 
@@ -59,6 +62,15 @@ for (let p of platforms) { // loop for detecting if the playing is on platform
   if (player.x + player.w > mapWidth) {
     player.x = mapWidth - player.w;
   }
+
+  if (player.attacking) {
+  player.attackTimer--;
+
+  if (player.attackTimer <= 0) {
+    player.attacking = false;
+  }
+ } 
+ 
 }
 
 

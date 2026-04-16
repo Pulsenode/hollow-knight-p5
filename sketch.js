@@ -134,8 +134,15 @@ function keyPressed() { // function for keybindings
     player.vx = -player.speed;
   }
 
-  if (keyIsDown(68) || keyIsDown(39)) { // D or ArrowRight
+  if (keyIsDown(68) || keyIsDown(39)) { // D or ArrowRight | Right
     player.vx = player.speed;
+  }
+
+  if (keyIsDown(70)) { // leftClick or F for attacking
+    if (!player.attacking) {
+      player.attacking = true;
+      player.attackTimer = 10; // 10 frames
+    }
   }
 }
 
