@@ -7,8 +7,11 @@ let difficulty = 'Medium';
 let groundY; // ground level variable
 let cameraX = 0; // camera
 
-let score = 0;
+let score = 0; // player score
 
+let hitPause = 0; 
+let shake = 0
+let isFrozen = false; // temporary freeze frames when hit
 
 
 function setup() { // function that setup the canva / map
@@ -76,7 +79,7 @@ function mousePressed() { // function for when a mouse button is pressed
   ) {
     gameState = "menu"; // Chaging the game state to go back to meny
   }
-}
+ }
 }
 
 
@@ -101,25 +104,35 @@ function draw() {
 function runGame() {// function that run update and draw player when hame is running
   background(50);
 
-  updatePlayer(); // using updatePlayer function in player file
+  // Handle freeze frames timer
+  if (hitPause > 0) {
+    hitPause--;
+    isFrozen = true;
+  } else {
+    isFrozen = false;
+  }
 
-  drawUI(); // using the drawUI function for health bar
+  drawUI(); // using the drawUI function for health bar (UI not shaken)
+
+  cameraX = player.x - width / 2;
+  cameraX = constrain(cameraX, 0, mapWidth - width); // prevents for the camera for going to far right and left
+  
+  push(); // World drawing (shaken). UI is drawn outside of this push/pop so it stays stable.
+  applyShake(); 
 
   fill(100);
   rect(-cameraX, groundY, width * 2, height - groundY);
 
-  cameraX = player.x - width / 2;
-  cameraX = constrain(cameraX, 0, mapWidth - width); // prevents for the camera for going to far right and left
+  if (!isFrozen) {
+      updatePlayer(); // using updatePlayer function in player file
+      updateEnemies(); // using updateEnemies function from enemy file
+  }
 
   drawPlatforms(cameraX); // using drawPlatforms function from world file
   drawPlayer(cameraX); // using drawPlayer function from player file
-
-  updateEnemies(); // using updateEnemies function from enemy file
   drawEnemies(cameraX); // using drawEnemies function from enemy file
 
-  for (let p of platforms) {
-  rect(p.x - cameraX, p.y, p.w, p.h);
-  }
+  pop();
 }
 
 
@@ -147,6 +160,20 @@ function keyPressed() { // function for keybindings
       player.attacking = true;
       player.attackTimer = 10; // 10 frames
     }
+  }
+}
+
+
+function applyShake() {
+  if (shake > 0.1) {
+    let offsetX = random(-shake, shake);
+    let offsetY = random(-shake, shake);
+
+    translate(offsetX, offsetY);
+
+    shake *= 0.9; // slower decay = smoother
+  } else {
+    shake = 0;
   }
 }
 

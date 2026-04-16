@@ -7,7 +7,7 @@ function initEnemies() {
 }
 
 function updateEnemies() { // function to update 
-  for (let e of enemies) {
+  for (let e of enemies) { // lor for enemies
 
     let distance = dist(player.x, player.y, e.x, e.y);
 
@@ -17,7 +17,7 @@ function updateEnemies() { // function to update
     }
 
     if (e.hitCooldown > 0) {
-        e.hitCooldown--
+        e.hitCooldown--;
     }
 
     let isColliding = // Collision detection
@@ -29,6 +29,13 @@ function updateEnemies() { // function to update
     if (isColliding && player.hitCooldown === 0) {
         player.hp--;
         player.hitCooldown = 30; // invincibility frames for the player to not get spammed 
+
+            
+        hitPause = 6; // feedback
+        shake = 12; // screen shake when player is hit
+
+        let dir = player.x < e.x ? -1 : 1; // knockback player
+        player.x += dir * 30;
 
         if (player.hp <= 0) { // if the player hp = 0, gamestate change to death
             gameState = "death";
@@ -53,6 +60,12 @@ function updateEnemies() { // function to update
     if (hit && e.hitCooldown === 0) {
         e.hp--; 
         e.hitCooldown = 20; // prevent for span hits
+
+      hitPause = 5; // impact feedback
+      shake = 12; // screen shake when enemy is hit
+
+        let dir = player.x < e.x ? 1 : -1; //knowback
+        e.x += dir * 25;
 
     if (e.hp <= 0) { // if the hp is equal or less than 0, then dead state become true
         e.dead = true;
