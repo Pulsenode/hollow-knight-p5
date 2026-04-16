@@ -10,21 +10,12 @@ let cameraX = 0; // camera
 
 
 function setup() { // function that setup the canva / map
-  createCanvas(2000, 600);
+  createCanvas(1920, 1080); // screen resolution 
   groundY = height - 50; // defining ground level
 
-  player = { // object that handle multiple variables for player mechanics
-  x: 100,
-  y: height - 150,
-  w: 40,
-  h: 40,
-  vx: 0,
-  vy: 0,
-  speed: 5,
-  jumpForce: -12,
-  gravity: 0.6,
-  onGround: false
-  };
+  initPlayer(); // Using Player file
+  initWorld(); // Using World file
+
 }
 
 
@@ -86,36 +77,25 @@ function runGame() {// function that run update and draw player when hame is run
   background(50);
 
   updatePlayer();
-  drawPlayer();
 
   fill(100);
   rect(-cameraX, groundY, width * 2, height - groundY);
 
   cameraX = player.x - width / 2;
-}
+  cameraX = constrain(cameraX, 0, mapWidth - width); // prevents for the camera for going to far right and left
 
+  drawPlatforms(cameraX);
+  drawPlayer(cameraX);
 
-function updatePlayer() {// function that update player movememnt every 60frames / seconds
-  
-  player.vx = 0;
-
-  keyPressed();
-
-  player.x += player.vx;
-
-  player.vy += player.gravity; //increase every frame to simulate falling acceleration
-  player.y += player.vy; // moves down to simulate player fall
-
-  if (player.y + player.h >= groundY) { // collision logic | detect if player touch the ground 
-  player.y = groundY - player.h; // prevents player sinking into the ground
-  player.vy = 0; // stop falling
-  player.onGround = true; // track state | yes
-  } else {
-  player.onGround = false; // track state | no
+  for (let p of platforms) {
+  rect(p.x - cameraX, p.y, p.w, p.h);
   }
 }
 
-function keyPressed() {
+
+
+
+function keyPressed() { // function for keybindings 
 
   if (keyIsDown(38) || keyIsDown(32)) { // ArrowUp or spacebar | Jumping button
     if(player.onGround) {
@@ -134,18 +114,12 @@ function keyPressed() {
 
 
 
-function drawPlayer() {// function that create the character apperance
-  rect(player.x - cameraX, player.y, player.w, player.h);
-}
-
-
-
 function displayStartMenu() {// menu screen display
   background(200);
   fill(0);
   textSize(64);
   textAlign(CENTER);
-  text('Hollow Knight', width / 2, height / 2 - 100);
+  text('Hollow Knight', width / 2, height / 2 - 100); // Title 
 
   // Play button
   fill(0, 200, 0);
