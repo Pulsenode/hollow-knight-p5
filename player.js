@@ -14,7 +14,10 @@ function initPlayer() {
     onGround: false,
 
     attacking: false, // check if attack is active | by default no
-    attackTimer: 0 // controls attack duration
+    attackTimer: 0, // controls attack duration
+
+    hp: 5, // Health of the player
+    hitCooldown: 0, 
   };
 }
 
@@ -38,6 +41,9 @@ function updatePlayer() {// function that update player movememnt every 60frames
   player.onGround = false; // track state | no
   }
 
+  if (player.hitCooldown > 0) {
+  player.hitCooldown--;
+  }
 
 for (let p of platforms) { // loop for detecting if the playing is on platform
 
@@ -70,10 +76,20 @@ for (let p of platforms) { // loop for detecting if the playing is on platform
     player.attacking = false;
   }
  } 
- 
+
 }
 
 
 function drawPlayer(cameraX) {
+
+    push(); // save current state for color
+    if (player.hitCooldown > 0) {
+    fill(255, 150, 150); // damaged color
+        } else {
+    fill(255);
+    }
+
   rect(player.x - cameraX, player.y, player.w, player.h);
+  pop(); // restore the state
+
 }

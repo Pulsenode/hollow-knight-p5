@@ -7,6 +7,8 @@ let difficulty = 'Medium';
 let groundY; // ground level variable
 let cameraX = 0; // camera
 
+let score = 0;
+
 
 
 function setup() { // function that setup the canva / map
@@ -101,17 +103,19 @@ function runGame() {// function that run update and draw player when hame is run
 
   updatePlayer(); // using updatePlayer function in player file
 
+  drawUI(); // using the drawUI function for health bar
+
   fill(100);
   rect(-cameraX, groundY, width * 2, height - groundY);
 
   cameraX = player.x - width / 2;
   cameraX = constrain(cameraX, 0, mapWidth - width); // prevents for the camera for going to far right and left
 
-  drawPlatforms(cameraX);
-  drawPlayer(cameraX);
+  drawPlatforms(cameraX); // using drawPlatforms function from world file
+  drawPlayer(cameraX); // using drawPlayer function from player file
 
-  updateEnemies();
-  drawEnemies(cameraX);
+  updateEnemies(); // using updateEnemies function from enemy file
+  drawEnemies(cameraX); // using drawEnemies function from enemy file
 
   for (let p of platforms) {
   rect(p.x - cameraX, p.y, p.w, p.h);
@@ -145,6 +149,27 @@ function keyPressed() { // function for keybindings
     }
   }
 }
+
+
+function drawUI() { // function for the UserInterface | Include score and HP bar
+
+  push(); 
+
+  let maxHP = 5;
+  let barWidth = 200;
+
+  fill(100); // HP bar
+  rect(20, 20, barWidth, 20); // HP bar
+
+  fill(255, 0, 0);
+  rect(20, 20, (player.hp / maxHP) * barWidth, 20);
+
+  // 🧠 Score
+  text("Score: " + score, 20, 60);
+
+  pop();
+}
+
 
 function resetGame() { // function that allow everything to reset
   initPlayer(); // reset player position
