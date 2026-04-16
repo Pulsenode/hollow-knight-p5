@@ -1,6 +1,6 @@
 
 let platforms = []; // array for platforms
-let mapWidth = 20000; // defining map border
+let mapWidth = 20000; // defining map border / map width
 
 
 function initWorld() {

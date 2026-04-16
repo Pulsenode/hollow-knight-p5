@@ -10,11 +10,12 @@ let cameraX = 0; // camera
 
 
 function setup() { // function that setup the canva / map
-  createCanvas(1920, 1080); // screen resolution 
+  createCanvas(1920, 1080); // screen resolution | To see world size go to world.js 
   groundY = height - 50; // defining ground level
 
-  initPlayer(); // Using Player file
-  initWorld(); // Using World file
+  initPlayer(); // Using player function in player file
+  initWorld(); // Using world function in world file
+  initEnemies(); // Using enemy function in enemy file
 
 }
 
@@ -69,6 +70,10 @@ function draw() {
   if (gameState === "game") { // if the gamestate is game, then display text
     runGame(); // running the fucntion runGame
   }
+
+    if (gameState === "death") { // if the gamestate is death, then display text
+    drawDeathScreen(); // running the fucntion drawDeathScreen
+  }
 }
 
 
@@ -76,7 +81,7 @@ function draw() {
 function runGame() {// function that run update and draw player when hame is running
   background(50);
 
-  updatePlayer();
+  updatePlayer(); // using updatePlayer function in player file
 
   fill(100);
   rect(-cameraX, groundY, width * 2, height - groundY);
@@ -87,12 +92,21 @@ function runGame() {// function that run update and draw player when hame is run
   drawPlatforms(cameraX);
   drawPlayer(cameraX);
 
+  updateEnemies();
+  drawEnemies(cameraX);
+
   for (let p of platforms) {
   rect(p.x - cameraX, p.y, p.w, p.h);
   }
 }
 
 
+function resetGame() { // function that allow everything to reset
+  initPlayer(); // reset player position
+  initWorld(); // reset world
+  initEnemies(); // reset enemy position
+  gameState = "game";
+}
 
 
 function keyPressed() { // function for keybindings 
@@ -112,9 +126,17 @@ function keyPressed() { // function for keybindings
   }
 }
 
+function drawDeathScreen() { // function for death screen apperance
+  background(0);
+
+  fill(255);
+  textAlign(CENTER);
+  textSize(50);
+  text("YOU DIED", width / 2, height / 2);
+}
 
 
-function displayStartMenu() {// menu screen display
+function displayStartMenu() {// function for start menu apperance
   background(200);
   fill(0);
   textSize(64);
