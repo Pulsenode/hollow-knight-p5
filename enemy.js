@@ -1,9 +1,9 @@
 let enemies = [];
-let currentAttackBox = null;
 
 function initEnemies() {
   enemies = [ // this array handle the position, width and height, speed and hp of the emeies
-    { x: 600, y: 500, w: 40, h: 40, speed: 2, hp: 3, hitCooldown : 0 } 
+    { x: 600, y: 500, w: 40, h: 40, speed: 2, hp: 3, hitCooldown : 0,
+      vy: 0, gravity: 0.6, onGround: false }
   ];
 }
 
@@ -21,6 +21,46 @@ function updateEnemies() { // function to update
         e.hitCooldown--;
     }
 
+    // --- simple vertical physics for enemies (gravity + landing) ---
+    if (e.vy === undefined) e.vy = 0;
+    if (e.gravity === undefined) e.gravity = 0.6;
+
+    e.vy += e.gravity;
+    e.y += e.vy;
+
+    // land on ground
+    if (e.y + e.h >= groundY) {
+      e.y = groundY - e.h;
+      e.vy = 0;
+      e.onGround = true;
+    } else {
+      e.onGround = false;
+    }
+
+    // land on platforms (top only)
+    for (let p of platforms) {
+      // simple AABB check to see if enemy intersects the platform
+      let intersects =
+        e.x < p.x + p.w &&
+        e.x + e.w > p.x &&
+        e.y < p.y + p.h &&
+        e.y + e.h > p.y;
+
+      if (intersects) {
+        // if falling, place on top
+        if (e.vy > 0 && e.y + e.h - e.vy <= p.y) {
+          e.y = p.y - e.h - 0.01;
+          e.vy = 0;
+          e.onGround = true;
+        } else if (e.vy < 0 && e.y >= p.y + p.h - 0.01) {
+          // hit underside
+          e.y = p.y + p.h + 0.01;
+          e.vy = 0;
+        }
+      }
+    }
+
+    // Collision with player
     let isColliding = // Collision detection
         player.x < e.x + e.w &&
         player.x + player.w > e.x &&
@@ -43,88 +83,6 @@ function updateEnemies() { // function to update
         }
     }
 
-    if (player.attacking) {
-
-    let attackBox = {}; // variable 
-    
-
-    if (player.attackDir === "right") {
-    attackBox = {
-        x: player.x + player.w,
-        y: player.y,
-        w: 40,
-        h: player.h
-    };
-    }
-
-    if (player.attackDir === "left") {
-    attackBox = {
-        x: player.x - 40,
-        y: player.y,
-        w: 40,
-        h: player.h
-    };
-    }
-
-    if (player.attackDir === "up") {
-    attackBox = {
-        x: player.x,
-        y: player.y - 40,
-        w: player.w,
-        h: 40
-    };
-    }
-
-    if (player.attackDir === "down") {
-    attackBox = {
-        x: player.x,
-        y: player.y + player.h,
-        w: player.w,
-        h: 40
-    };
-    }
-
-    currentAttackBox = attackBox;
-
-    let hit =
-        attackBox.x < e.x + e.w &&
-        attackBox.x + attackBox.w > e.x &&
-        attackBox.y < e.y + e.h &&
-        attackBox.y + attackBox.h > e.y;
-
-    if (hit && e.hitCooldown === 0) {
-        e.hp--; 
-        e.hitCooldown = 20; // prevent for span hits
-
-      hitPause = 5; // impact feedback
-      shake = 12; // screen shake when enemy is hit
-
-
-      for (let i = 0; i < 8; i++) { // loop for spwanning particles 
-        particles.push({
-            x: e.x + e.w / 2, //spwan at the enemies  
-            y: e.y + e.h / 2,
-            vx: random(-3, 3), //random direction where the partciles spwan
-            vy: random(-3, 0),
-            life: 10 // particles exists for a short period of time
-         });
-        }
-
-        let dir = player.x < e.x ? 1 : -1; //knowback
-        e.x += dir * 25;
-
-    if (e.hp <= 0) { // if the hp is equal or less than 0, then dead state become true
-        e.dead = true;
-        score++; // increment the score of the player of 1
-      }
-    }
-
-    console.log("BOX:", attackBox);
-   }
-
-   if (!player.attacking) {
-  currentAttackBox = null;
-  }
   }
   enemies = enemies.filter(e => !e.dead);
 

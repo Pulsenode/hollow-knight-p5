@@ -9,9 +9,14 @@ let cameraX = 0; // camera
 
 let score = 0; // player score
 
-
-
 let isFrozen = false; // temporary freeze frames when hit
+
+let groundImg, platformImg;
+
+function preload() {
+  //groundImg = loadImage("assets/ground.png");
+  //platformImg = loadImage("assets/platform.png");
+}
 
 
 
@@ -23,6 +28,8 @@ function setup() { // function that setup the canva / map
   initPlayer(); // Using player function in player file
   initWorld(); // Using world function in world file
   initEnemies(); // Using enemy function in enemy file
+
+  initCombat();
 
 }
 
@@ -128,12 +135,15 @@ function runGame() {// function that run update and draw player when hame is run
   fill(100);
   rect(-cameraX, groundY, width * 2, height - groundY);
 
+  handleAttackInput();
+
   if (!isFrozen) {
       updatePlayer(); // using updatePlayer function in player file
+      updateAttack();
       updateEnemies(); // using updateEnemies function from enemy file
   }
 
-  drawPlatforms(cameraX); // using drawPlatforms function from world file
+  drawMap(cameraX); // using drawMap function from world file | loop that add colors to the element of the map
   drawPlayer(cameraX); // using drawPlayer function from player file
   drawEnemies(cameraX); // using drawEnemies function from enemy file
 
@@ -149,27 +159,6 @@ function keyPressed() { // function for keybindings
   if (keyCode === UP_ARROW || keyCode === 32) { // ArrowUp or spacebar | Jumping button
     if(player.onGround) {
       player.vy = player.jumpForce;
-    }
-  }
-
-
-
-  if (keyCode === 70) { // F for attacking
-    if (!player.attacking) {
-
-      player.attacking = true;
-      player.attackTimer = 10;
-
-      //  set attack direction at the moment of attack
-      if (keyIsDown(UP_ARROW)) {
-        player.attackDir = "up";
-      } else if (keyIsDown(DOWN_ARROW)) {
-        player.attackDir = "down";
-      } else {
-        player.attackDir = player.dir; // fallback to last horizontal direction
-      }
-      console.log("ATTACK DIR:", player.attackDir);
-
     }
   }
 }
@@ -200,6 +189,7 @@ function resetGame() { // function that allow everything to reset
   initPlayer(); // reset player position
   initWorld(); // reset world
   initEnemies(); // reset enemy position
+  initCombat();
   gameState = "game";
 }
 
