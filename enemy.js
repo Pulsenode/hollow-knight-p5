@@ -1,5 +1,12 @@
 let enemies = [];
 
+function overlaps(ax, ay, aw, ah, bx, by, bw, bh) {
+  return ax < bx + bw &&
+         ax + aw > bx &&
+         ay < by + bh &&
+         ay + ah > by;
+}
+
 function initEnemies() {
   enemies = [ // this array handle the position, width and height, speed and hp of the emeies
     { x: 600, y: 500, w: 40, h: 40, speed: 2, hp: 3, hitCooldown : 0,
@@ -29,12 +36,21 @@ function updateEnemies() { // function to update
     e.y += e.vy;
 
     // land on ground
-    if (e.y + e.h >= groundY) {
-      e.y = groundY - e.h;
-      e.vy = 0;
-      e.onGround = true;
-    } else {
-      e.onGround = false;
+    for (let p of world) {
+
+      if (overlaps(e.x, e.y, e.w, e.h, p.x, p.y, p.w, p.h)) {
+
+            if (e.vy > 0 && e.y + e.h - e.vy <= p.y) {
+              e.y = p.y - e.h;
+              e.vy = 0;
+              e.onGround = true;
+            }
+
+        else if (e.vy < 0) { // tape le plafond
+          e.y = p.y + p.h;
+          e.vy = 0;
+        }
+      }
     }
 
     // land on platforms (top only)
@@ -88,7 +104,7 @@ function updateEnemies() { // function to update
 
 }
 
-function drawEnemies(cameraX) {  // function for drawing the enemy
+function drawEnemies(cameraX, cameraY) {  // function for drawing the enemy
 
   for (let e of enemies) {
 
@@ -101,7 +117,7 @@ function drawEnemies(cameraX) {  // function for drawing the enemy
       fill(200, 50, 50);
     }
 
-    rect(e.x - cameraX, e.y, e.w, e.h);
+    rect(e.x - cameraX, e.y - cameraY, e.w, e.h);
 
     pop();
   }
@@ -113,7 +129,7 @@ function drawEnemies(cameraX) {  // function for drawing the enemy
     if (currentAttackBox) {
         rect(
             currentAttackBox.x - cameraX,
-            currentAttackBox.y,
+            currentAttackBox.y - cameraY,
             currentAttackBox.w,
             currentAttackBox.h
         );

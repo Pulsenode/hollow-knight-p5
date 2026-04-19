@@ -1,16 +1,16 @@
 let player;
 
 function initPlayer() {
-  player = {
-    x: 100,
-    y: 300,
-    w: 40,
-    h: 40,
+  player = { // player object storing variable for gameplay
+    x: 1400,
+    y: 3400,
+    w: 64,
+    h: 64,
     vx: 0,
     vy: 0,
-    speed: 5,
-    jumpForce: -12,
-    gravity: 0.6,
+    speed: 8,
+    jumpForce: -17,
+    gravity: 0.8,
     onGround: false,
 
     hp: 5, // Health of the player
@@ -38,6 +38,7 @@ function updatePlayer() {// function that update player movememnt every 60frames
   player.x += player.vx;  //horizontal movement & collisions
 
 
+  // allow the player to not get through walls, roofs etc ... 
   function overlaps(ax, ay, aw, ah, bx, by, bw, bh) { // using AABB overlap test | A = player and B = platform. It checks if two rectangles are overlapping, if yes = collision
   return ax < bx + bw && // player left < platform right
          ax + aw > bx && // player right > platform left

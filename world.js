@@ -1,9 +1,59 @@
 let world = [];     // solid blocks (walls, floor, ceiling)
 let platforms = []; // jumpable surfaces
-let mapWidth = 20000;
+let mapWidth = 10000;
+
 
 
 function initWorld() {
+
+  if (mapData && mapData.layers) {
+
+    world = [];
+    platforms = [];
+
+
+
+    let layer = mapData.layers.find(l => l.type === "objectgroup");
+
+    if (!layer) {
+      console.warn("❌ No object layer found");
+      return;
+    }
+
+        console.log(mapData);
+
+        console.log(world);
+        console.log(platforms);
+
+
+    for (let obj of layer.objects) {
+
+      console.log(obj);
+
+      // ignore objets vides
+      if (obj.width === 0 || obj.height === 0) continue;
+
+      let block = {
+        x: obj.x,
+        y: obj.y,
+        w: obj.width,
+        h: obj.height,
+        type: obj.class || obj.type || "ground"
+      };
+
+      if (block.type === "platform") {
+        platforms.push(block);
+      } else {
+        world.push(block);
+      }
+    }
+
+    console.log("✅ Loaded from Tiled");
+    return;
+  }
+
+  // ✅ fallback (TON CODE DOIT ÊTRE ICI)
+  console.log("⚠️ Using hardcoded world");
 
   world = [
 // =========================
@@ -71,8 +121,6 @@ function initWorld() {
     { x: 3950, y: 0, w: 50, h: 1080, type: "wall" }, // right wall
     { x: 2500, y: 0, w: 1500, h: 50, type: "ceiling" }, // ceiling
   ];
-
-
   platforms = [
 
     // vertical shaft zig-zag
@@ -91,7 +139,9 @@ function initWorld() {
   ];
 }
 
-function drawMap(cameraX) {
+
+
+function drawMap(cameraX, cameraY) {
 
   // =====================
   // DRAW WORLD (SOLID)
@@ -105,7 +155,7 @@ function drawMap(cameraX) {
     else if (w.type === "ceiling") fill(50, 50, 150); // blue-ish
     else fill(120);
 
-    rect(w.x - cameraX, w.y, w.w, w.h);
+    rect(w.x - cameraX, w.y - cameraY, w.w, w.h);
 
     pop();
   }
@@ -119,7 +169,7 @@ function drawMap(cameraX) {
 
     fill(180); // light grey
 
-    rect(p.x - cameraX, p.y, p.w, p.h);
+    rect(p.x - cameraX, p.y - cameraY, p.w, p.h);
 
     pop();
   }

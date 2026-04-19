@@ -6,22 +6,26 @@ let difficulty = 'Medium';
 
 let groundY; // ground level variable
 let cameraX = 0; // camera
+let cameraY = 0; // camera
 
 let score = 0; // player score
 
 let isFrozen = false; // temporary freeze frames when hit
+
+let mapData;
 
 let groundImg, platformImg;
 
 function preload() {
   //groundImg = loadImage("assets/ground.png");
   //platformImg = loadImage("assets/platform.png");
+    mapData = loadJSON("map.json");
 }
 
 
 
 
-function setup() { // function that setup the canva / map
+function setup() { // function that setup the canva / map + use function
   createCanvas(1920, 1080); // screen resolution | To see world size go to world.js 
   groundY = height - 50; // defining ground level
 
@@ -113,6 +117,8 @@ function draw() {
 function runGame() {// function that run update and draw player when hame is running
   background(50);
 
+
+
   // Handle freeze frames timer for impact frame
   if (hitPause > 0) {
     hitPause--;
@@ -125,15 +131,27 @@ function runGame() {// function that run update and draw player when hame is run
 
   let targetX = player.x - width / 2;
   cameraX += (targetX - cameraX) * 0.1;
+
+  let targetY = player.y - height / 2;
+  cameraY += (targetY - cameraY) * 0.1;
+
+    let maxY = 0;
+  for (let w of world) {
+    if (w.y + w.h > maxY) {
+      maxY = w.y + w.h;
+    }
+  }
+
+  cameraY = constrain(cameraY, 0, maxY - height);
+
   cameraX = constrain(cameraX, 0, mapWidth - width); // prevents for the camera for going to far right and left
+  cameraY = constrain(cameraY, 0, maxY - height); // adapte selon ta map
   
   push(); // World drawing (shaken). UI is drawn outside of this push/pop so it stays stable.
 
   applyShake(); // applying shake to the world but not to the UI 
   updateParticles(); // adding particles
 
-  fill(100);
-  rect(-cameraX, groundY, width * 2, height - groundY);
 
   handleAttackInput();
 
@@ -143,9 +161,9 @@ function runGame() {// function that run update and draw player when hame is run
       updateEnemies(); // using updateEnemies function from enemy file
   }
 
-  drawMap(cameraX); // using drawMap function from world file | loop that add colors to the element of the map
-  drawPlayer(cameraX); // using drawPlayer function from player file
-  drawEnemies(cameraX); // using drawEnemies function from enemy file
+  drawMap(cameraX, cameraY); // using drawMap function from world file | loop that add colors to the element of the map
+  drawPlayer(cameraX, cameraY); // using drawPlayer function from player file
+  drawEnemies(cameraX, cameraY); // using drawEnemies function from enemy file
 
   pop();
 }

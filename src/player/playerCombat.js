@@ -44,12 +44,11 @@ function updateAttack() {
 
     player.attackTimer--;
 
+    currentAttackBox = getAttackBox();
+
     if (player.attackTimer === 8) {
       checkAttackHit();
     }
-
-    // this is where i will sync damage later
-    // example: if (player.attackTimer === 8) applyDamage();
 
     if (player.attackTimer <= 0) {
       player.attacking = false;

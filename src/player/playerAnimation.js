@@ -1,4 +1,4 @@
-function drawPlayer(cameraX) {
+function drawPlayer(cameraX, cameraY) {
 
     push(); // save current state for color
     if (player.hitCooldown > 0) {
@@ -7,7 +7,7 @@ function drawPlayer(cameraX) {
     fill(255);
     }
 
-  rect(player.x - cameraX, player.y, player.w, player.h);
+  rect(player.x - cameraX, player.y - cameraY, player.w, player.h);
   pop(); // restore the state
 
 }
